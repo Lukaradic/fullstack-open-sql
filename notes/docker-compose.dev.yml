@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - 5432:5432
+    volumes:
+      - posgres_data:/var/lib/postgresql/data
+
+  server: build
+
+volumes:
+  posgres_data:
