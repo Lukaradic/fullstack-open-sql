@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: postgres-db
+    container_name: notes-dev-postgres-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: user
@@ -10,9 +10,19 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - posgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
 
-  server: build
-
-volumes:
-  posgres_data:
+  server:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    container_name: notes-dev-server
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      DATABASE_URL: "postgres://user:password@postgres:5432/mydb"
+    depends_on:
+      - postgres

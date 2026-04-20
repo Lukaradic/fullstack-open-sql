@@ -1,62 +1,18 @@
-require("dotenv").config();
-const { Sequelize, Model, DataTypes } = require("sequelize");
 const express = require("express");
 const app = express();
+
+const { PORT } = require("./util/config");
+const { connectToDatabase } = require("./util/db");
+const notesRouter = require("./controllers/notes");
+
 app.use(express.json());
+app.use("/api/notes", notesRouter);
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  // dialectOptions: {
-  //   ssl: {
-  //     require: true,
-  //     rejectUnauthorized: false,
-  //   },
-  // },
-});
+const start = async () => {
+  await connectToDatabase();
+  app.listen(PORT, () => {
+    console.log("Server running on port: ", PORT);
+  });
+};
 
-class Note extends Model {}
-
-Note.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    important: {
-      type: DataTypes.BOOLEAN,
-    },
-    date: {
-      type: DataTypes.DATE,
-    },
-  },
-  {
-    sequelize,
-    underscored: true,
-    timestamps: false,
-    modelName: "note",
-  },
-);
-
-const PORT = process.env.PORT || 3001;
-
-app.get("/api/notes", async (_, res) => {
-  const notes = await Note.findAll();
-  res.json(notes);
-});
-
-app.post("/api/notes", async (req, res) => {
-  console.log(req.body, "body");
-  try {
-    const newNote = await Note.create({ ...req.body, date: new Date() });
-    res.json(newNote);
-  } catch (err) {
-    res.status(400).json({ error: err });
-  }
-});
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+start();
