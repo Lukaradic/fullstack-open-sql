@@ -1,0 +1,3 @@
+create table blogs (id SERIAL PRIMARY KEY, author TEXT, url TEXT NOT NULL, title TEXT NOT NULL, likes INTEGER DEFAULT 0);
+INSERT INTO blogs (author, url, title) VALUES ('Luka Radic', 'www.google.com', 'Google domain');
+insert into blogs (author, url, title) values ('Liran Tal', 'https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/', '10 best practices to containerize Node.js web applications with Docker');
