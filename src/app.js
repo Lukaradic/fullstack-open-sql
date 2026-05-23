@@ -6,6 +6,7 @@ require("./models/models");
 const { loginRouter } = require("./routes/login");
 const { authorsRouter } = require("./routes/authors");
 const { resetRouter } = require("./routes/reset");
+const { readingListsRouter } = require("./routes/readingLists");
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/authors", authorsRouter);
 app.use("/api/reset", resetRouter);
+app.use("/api/readinglists", readingListsRouter);
 app.use(errorHandler);
 
 module.exports = app;

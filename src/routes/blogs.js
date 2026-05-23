@@ -3,11 +3,11 @@ const { Blog, User } = require("../models/models");
 const { findBlogMiddleware } = require("../middleware/blog");
 const { tokenDecoder } = require("../middleware/token");
 const { Op } = require("sequelize");
+const ReadingList = require("../models/ReadingList");
 
 const blogRouter = express.Router();
 
 blogRouter.get("/", async (req, res) => {
-  console.log("calling blogRouter");
   try {
     const whereFilter = {};
     if (req.query.search) {
@@ -33,7 +33,7 @@ blogRouter.get("/", async (req, res) => {
 
 blogRouter.post("/", tokenDecoder, async (req, res, next) => {
   try {
-    const { author, title, url } = req?.body;
+    const { author, title, url, year_written } = req?.body;
     if (!author || !title || !url) {
       throw new Error("Values author, title and url are required");
     }
@@ -42,7 +42,8 @@ blogRouter.post("/", tokenDecoder, async (req, res, next) => {
       author,
       title,
       url,
-      UserId: req.decodedToken.id,
+      user_id: req.decodedToken.id,
+      year_written,
     });
     if (!newBlog) {
       throw new Error("Failed to create new blog");
@@ -84,5 +85,25 @@ blogRouter.put("/:id", findBlogMiddleware, async (req, res, next) => {
     next(err);
   }
 });
+
+blogRouter.post(
+  "/:id/add-to-reading-list",
+  findBlogMiddleware,
+  tokenDecoder,
+  async (req, res, next) => {
+    try {
+      const blogId = req.blog.id;
+      const userId = req.decodedToken.id;
+      const readingList = await ReadingList.create({
+        user_id: userId,
+        blog_id: blogId,
+      });
+
+      res.status(201).json(readingList);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 module.exports = { blogRouter };

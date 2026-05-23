@@ -48,6 +48,7 @@ User.init(
     defaultScope: {
       attributes: { exclude: ["password"] },
     },
+    underscored: true,
   },
 );
 

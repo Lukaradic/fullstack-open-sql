@@ -1,5 +1,6 @@
 const express = require("express");
 const { User, Blog } = require("../models/models");
+const ReadingList = require("../models/ReadingList");
 
 const usersRouter = express.Router();
 
@@ -50,6 +51,42 @@ usersRouter.put("/:username", async (req, res, next) => {
     user.username = newUsername;
     await user.save();
     res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+usersRouter.get("/:id", async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const { read } = req?.query;
+    const where = {};
+    if (read !== undefined) {
+      where.read = read === "true";
+    }
+    const user = await User.findOne({
+      where: { id: userId },
+      include: [
+        {
+          model: Blog,
+          as: "blogs",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "user_id", "UserId"],
+          },
+          include: [
+            {
+              model: ReadingList,
+              as: "readinglists",
+              attributes: ["id", "read"],
+              where: where,
+            },
+          ],
+        },
+      ],
+    });
+
+    res.status(201).json(user);
   } catch (err) {
     next(err);
   }
