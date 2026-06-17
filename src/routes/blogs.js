@@ -21,10 +21,10 @@ blogRouter.get("/", async (req, res) => {
       order: [["likes", "DESC"]],
       include: {
         model: User,
+        as: "user",
       },
       where: whereFilter,
     });
-    console.log(blogs, "blogs response");
     res.status(200).json(blogs);
   } catch (err) {
     res.status(400).json({ error: err });

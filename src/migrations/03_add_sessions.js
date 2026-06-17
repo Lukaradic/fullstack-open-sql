@@ -17,6 +17,11 @@ async function up({ context: queryInterface }) {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    session_token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
     created_at: { type: DataTypes.DATE, allowNull: false },
     expires_at: { type: DataTypes.DATE, allowNull: false },
   });

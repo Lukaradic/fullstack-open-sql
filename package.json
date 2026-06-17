@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test --test-concurrency=1 tests/api_ch3.test.js",
+    "test": "TESTING=true node --test --test-concurrency=1",
     "start": "npx nodemon index.js",
     "rollback": "node src/util/rollbackMigration.js"
   },

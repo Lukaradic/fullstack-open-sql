@@ -16,11 +16,16 @@ const createUser = async (username, name, password) => {
 };
 
 const login = async (username, password) => {
-  const response = await axios.post(`${baseUrl}/login`, {
-    username,
-    password,
-  });
-  return response.data.token;
+  try {
+    const response = await axios.post(`${baseUrl}/login`, {
+      username,
+      password,
+    });
+    return response.data.token;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
 };
 
 const resetAndSeed = async () => {

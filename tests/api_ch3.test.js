@@ -29,7 +29,9 @@ describe("Blogs API", () => {
     };
 
     const response = await axios.post(`${baseUrl}/blogs`, newBlog, {
-      headers: { Authorization: `Bearer ${testData.tokens[0]}` },
+      headers: {
+        Authorization: `Bearer ${testData.tokens[0]}`,
+      },
     });
 
     assert.ok([200, 201].includes(response.status));

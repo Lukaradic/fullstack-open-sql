@@ -1,6 +1,5 @@
 const express = require("express");
 const { User, Blog } = require("../models/models");
-const ReadingList = require("../models/ReadingList");
 
 const usersRouter = express.Router();
 
@@ -12,7 +11,7 @@ usersRouter.post("/", async (req, res, next) => {
     }
     const responseUserData = newUser.toJSON();
     delete responseUserData.password;
-    res.status(201).json(responseUserData);
+    return res.status(201).json(responseUserData);
   } catch (err) {
     next(err);
   }
@@ -27,7 +26,7 @@ usersRouter.get("/", async (_, res, next) => {
       },
     });
 
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (err) {
     next(err);
   }
@@ -50,7 +49,7 @@ usersRouter.put("/:username", async (req, res, next) => {
 
     user.username = newUsername;
     await user.save();
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (err) {
     next(err);
   }
@@ -70,23 +69,25 @@ usersRouter.get("/:id", async (req, res, next) => {
       include: [
         {
           model: Blog,
-          as: "blogs",
+          as: "readings",
           attributes: {
             exclude: ["createdAt", "updatedAt", "user_id", "UserId"],
           },
-          include: [
-            {
-              model: ReadingList,
-              as: "readinglists",
-              attributes: ["id", "read"],
-              where: where,
-            },
-          ],
+          through: {
+            attributes: ["id", "read"],
+            where: read !== undefined ? { read: read === "true" } : undefined,
+          },
         },
       ],
     });
 
-    res.status(201).json(user);
+    const userData = user.toJSON();
+    userData.readings = userData.readings.map(({ ReadingList, ...blog }) => ({
+      ...blog,
+      reading_list: ReadingList,
+    }));
+
+    return res.status(200).json(userData);
   } catch (err) {
     next(err);
   }

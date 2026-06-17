@@ -28,6 +28,11 @@ Session.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    session_token: {
+      type: DataTypes.STRING(512),
+      allowNull: false,
+      unique: true,
+    },
   },
   {
     sequelize,
